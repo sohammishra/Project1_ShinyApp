@@ -10,7 +10,9 @@ library(googleVis)
 library(maps)
 
 #data for US map on first page
-data = read.csv('04-18-2020.csv', TRUE)
+yesterday = format(Sys.Date() -1, '%m-%d-20%y')
+url = paste0('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/', yesterday, '.csv')
+data = fread(url)
 df = data.frame(data)
 setnames(df, old = 'Province_State', new = 'State')
 
@@ -18,23 +20,21 @@ df_num = select(df, c(1,6,7,11,12,13,14,17,18))
 df_num
 
 
-#data for state level density maps
+#data for state level density maps and time series charts
 
 counties = map_data('county')
-time_series = data <-read.csv("4_15_covid_confirmed_US.csv", TRUE)
+time_series = fread('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv')
 
 tidy_time_series = time_series %>% 
   select( -c(1:5), -c(11:50)) %>% 
   setnames( old = c('Admin2', 'Province_State'), new = c('subregion', 'state')) %>%
   mutate(subregion = tolower(subregion))  %>% 
   mutate(state = tolower(state)) %>%
-  gather(key='date', value= 'cases', starts_with('X'), na.rm=T)
+  gather(key='date', value= 'cases', contains('/'), na.rm=T)
 
-tidy_time_series$date=sub('X', '', tidy_time_series$date)
-tidy_time_series$date=as.Date(tidy_time_series$date, '%m.%d.%y')
+tidy_time_series$date=as.Date(tidy_time_series$date, '%m/%d/%y')
 
 joined=inner_join(tidy_time_series,counties, by= 'subregion' )
-
 
 
 

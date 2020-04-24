@@ -9,8 +9,8 @@ navbarPage(theme = shinytheme('journal'),
                         radioButtons("mapType", "Select Metric",
                                      c("Confirmed Cases"="Confirmed", 
                                        "Mortaility Rate"="Mortality_Rate",
-                                       'Testing Rate (tested per 100k people)' = 'Testing_Rate', 
-                                       'Hospitilization Rate'='Hospitalization_Rate')
+                                       'Testing Rate (tested per 100k people)' = 'Testing_Rate') 
+                                       #'Hospitilization Rate'='Hospitalization_Rate')
                         )
                       ),
                       mainPanel(
@@ -29,7 +29,7 @@ navbarPage(theme = shinytheme('journal'),
                                     min = as.Date("2020-03-01","%Y-%m-%d"),
                                     max=Sys.Date() -1,
                                     #max = as.Date("2020-04-14","%Y-%m-%d"),
-                                    value=as.Date("2020-04-14"),
+                                    value=as.Date(Sys.Date() -1),
                                     timeFormat="%Y-%m-%d"),
                         textOutput('grey')
                       ),
@@ -37,6 +37,13 @@ navbarPage(theme = shinytheme('journal'),
                       
                       mainPanel(
                         tabsetPanel(type='tab',
+                                    tabPanel('Growth',
+                                             
+                                             mainPanel(
+                                               selectInput('multistate_growth', 'Compare Multiple States', choices=unique(joined$state), multiple = T),
+                                               plotOutput('growth', width = '600px',height='350px'))
+                                             
+                                    ),
                                     tabPanel('Density Map', plotOutput('density')),
                                     tabPanel('Case Graph (linear)', 
                                              
@@ -54,8 +61,10 @@ navbarPage(theme = shinytheme('journal'),
                                                selectInput('multistate_log', 'Compare Multiple States', choices=unique(joined$state), multiple = T),
                                                plotOutput('log', width = '600px',height='350px'))
                                              
-                                             ),
-                                    tabPanel('Growth Rate'))
+                                             )
+                                    
+                                    
+                                    )
                         
                       )
                     )
