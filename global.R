@@ -17,7 +17,22 @@ df = data.frame(data)
 setnames(df, old = 'Province_State', new = 'State')
 
 df_num = select(df, c(1,6,7,11,12,13,14,17,18))
+df_num$hover <- with(df_num, paste(State, '<br>', "Confirmed:", Confirmed, '<br>', 'Deaths:', Deaths))
+df_num$State_abb = state.abb[match(df_num$State,state.name)]
 df_num
+
+# give state boundaries a white border
+l <- list(color = 'white', width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = 'white'
+)
+
+#fig <- plot_geo(df_num, locationmode = 'USA-states')
+
 
 
 #data for state level density maps and time series charts
@@ -36,7 +51,7 @@ tidy_time_series$date=as.Date(tidy_time_series$date, '%m/%d/%y')
 
 joined=inner_join(tidy_time_series,counties, by= 'subregion' )
 
-
+tidy_time_series
 
   
   
